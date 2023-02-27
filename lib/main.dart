@@ -1,19 +1,20 @@
-import 'package:card_crm/providers/secure_storage_provider.dart';
+import 'package:card_crm/providers/initial_provider.dart';
+import 'package:card_crm/router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-void main() async {
-  final wsUrl = Uri.parse('ws://127.0.0.1:3333/ws');
-  var channel = WebSocketChannel.connect(wsUrl);
+void main() {
+  // final wsUrl = Uri.parse('ws://127.0.0.1:3333/ws');
+  // var channel = WebSocketChannel.connect(wsUrl);
 
   runApp(
     ProviderScope(
-      child: MaterialApp(
+      child: MaterialApp.router(
         theme: ThemeData(useMaterial3: true),
         darkTheme: ThemeData.dark(),
-        home: const App(),
+        routerConfig: router,
       ),
     ),
   );
@@ -24,8 +25,14 @@ class App extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen(loginProvider, (_, next) {
-      print(next.value);
+    ref.listen(initialProvider, (_, next) {
+      switch (next.value) {
+        case InitialStates.noLoginPassword:
+          context.go('/login_page');
+          break;
+        default:
+          context.go('/ups');
+      }
     });
 
     return const Scaffold(
