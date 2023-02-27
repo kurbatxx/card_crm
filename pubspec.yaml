@@ -12,6 +12,7 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   go_router: ^6.2.0
   hooks_riverpod: ^2.2.0
+  http: ^0.13.5
   riverpod_lint: ^1.0.1
   web_socket_channel: ^2.3.0
 
