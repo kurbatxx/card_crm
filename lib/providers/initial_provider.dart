@@ -20,13 +20,20 @@ class AccessData {
 }
 
 final initialProvider = FutureProvider<InitialStates>((ref) async {
-  await Future.delayed(const Duration(seconds: 2));
+  await Future.delayed(const Duration(seconds: 1));
 
   try {
     await http.get(Uri.https('google.com'));
   } catch (e) {
     print('ERROR: $e');
     return InitialStates.noInternet;
+  }
+
+  try {
+    await http.get(Uri.http('127.0.0.1:33334'));
+  } catch (e) {
+    print('ERROR: $e');
+    return InitialStates.noServerConnection;
   }
 
   final secureStorage = ref.read(secureStorageProvider);
