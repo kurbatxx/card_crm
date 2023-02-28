@@ -441,7 +441,7 @@ packages:
     source: hosted
     version: "0.0.2"
   riverpod_lint:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: riverpod_lint
       sha256: "37b8a886cda7018ce86b03edcc8b09f9674b6a8f572757e748506fd91c1e51b5"
