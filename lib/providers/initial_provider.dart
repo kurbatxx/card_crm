@@ -1,5 +1,6 @@
 import 'package:card_crm/api/api.dart';
 import 'package:card_crm/providers/secure_storage_provider.dart';
+import 'package:card_crm/providers/server_connection.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:http/http.dart' as http;
@@ -29,14 +30,20 @@ final initialProvider = FutureProvider<InitialStates>((ref) async {
     return InitialStates.noInternet;
   }
 
+  final secureStorage = ref.read(secureStorageProvider);
+
+  final address = await secureStorage.read(key: "address") ?? "";
+  final port = await secureStorage.read(key: "port") ?? "";
+
   try {
-    await http.get(Uri.http('127.0.0.1:33334'));
+    await http.get(Uri.http('$address:$port'));
   } catch (e) {
     print('ERROR: $e');
+
+    ref.read(serverProvider.notifier).state = Server(address, port);
+
     return InitialStates.noServerConnection;
   }
-
-  final secureStorage = ref.read(secureStorageProvider);
 
   final login = await secureStorage.read(key: "login") ?? "";
   final password = await secureStorage.read(key: "password") ?? "";

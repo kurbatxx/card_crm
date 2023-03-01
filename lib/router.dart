@@ -1,4 +1,5 @@
 import 'package:card_crm/main.dart';
+import 'package:card_crm/pages/home_page.dart';
 import 'package:card_crm/pages/login_page.dart';
 import 'package:card_crm/pages/no_internet_page.dart';
 import 'package:card_crm/pages/server_setting_page.dart';
@@ -10,6 +11,10 @@ final router = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => const App(),
+    ),
+    GoRoute(
+      path: '/home',
+      builder: (context, state) => const HomePage(),
     ),
     GoRoute(
       path: '/login_page',

@@ -39,6 +39,9 @@ class App extends ConsumerWidget {
         case InitialStates.noServerConnection:
           context.go('/no_server');
           break;
+        case InitialStates.loginInSystem:
+          context.go('/home');
+          break;
         default:
           context.go('/ups');
       }
@@ -68,5 +71,14 @@ class App extends ConsumerWidget {
       // ),
       // //child: Text('Hello World!'),
     );
+  }
+}
+
+class MyWidget extends StatelessWidget {
+  const MyWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }
