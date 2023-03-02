@@ -1,6 +1,6 @@
 import 'package:card_crm/api/api.dart';
+import 'package:card_crm/ext/ext_log.dart';
 import 'package:card_crm/providers/secure_storage_provider.dart';
-import 'package:card_crm/providers/server_connection.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:http/http.dart' as http;
@@ -18,6 +18,11 @@ class AccessData {
   final String password;
 
   AccessData(this.login, this.password);
+
+  Map<String, dynamic> toJson() => {
+        'login': login,
+        'password': password,
+      };
 }
 
 final initialProvider = FutureProvider<InitialStates>((ref) async {
@@ -26,7 +31,7 @@ final initialProvider = FutureProvider<InitialStates>((ref) async {
   try {
     await http.get(Uri.https('google.com'));
   } catch (e) {
-    print('ERROR: $e');
+    'ERROR: $e'.log();
     return InitialStates.noInternet;
   }
 
@@ -35,15 +40,17 @@ final initialProvider = FutureProvider<InitialStates>((ref) async {
   final address = await secureStorage.read(key: "address") ?? "";
   final port = await secureStorage.read(key: "port") ?? "";
 
-  try {
-    await http.get(Uri.http('$address:$port'));
-  } catch (e) {
-    print('ERROR: $e');
-
-    ref.read(serverProvider.notifier).state = Server(address, port);
-
+  if (!await ref.read(apiProvider).checkServer(address, port)) {
     return InitialStates.noServerConnection;
   }
+
+  // try {
+  //   await http.get(Uri.http('$address:$port'));
+  // } catch (e) {
+  //   'ERROR: $e'.log();
+
+  //   return
+  // }
 
   final login = await secureStorage.read(key: "login") ?? "";
   final password = await secureStorage.read(key: "password") ?? "";
@@ -52,7 +59,7 @@ final initialProvider = FutureProvider<InitialStates>((ref) async {
     return InitialStates.noLoginPassword;
   }
 
-  if (await Api.login(login, password)) {
+  if (await ref.read(apiProvider).login(login, password)) {
     return InitialStates.wrongLoginPassword;
   }
 

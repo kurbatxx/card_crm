@@ -1,3 +1,4 @@
+import 'package:card_crm/api/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -9,7 +10,10 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: LoginPassWithButton(),
+      body: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: LoginPassWithButton(),
+      ),
     );
   }
 }
@@ -26,7 +30,9 @@ class LoginPassWithButton extends HookConsumerWidget {
     final isMounted = useIsMounted();
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Expanded(child: Container()),
         TextField(
           controller: loginController,
         ),
@@ -34,18 +40,36 @@ class LoginPassWithButton extends HookConsumerWidget {
           controller: passwordController,
         ),
         const SizedBox(
-          height: 4.0,
+          height: 8.0,
         ),
-        FilledButton(
-          onPressed: () async {
-            await Future.delayed(const Duration(seconds: 1));
+        ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: 300,
+            maxWidth: 350,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: FilledButton(
+                  onPressed: () async {
+                    final login = loginController.text;
+                    final password = passwordController.text;
 
-            final mounted = isMounted();
-            if (!mounted) return;
-            context.go('/home');
-          },
-          child: const Text('Войти'),
-        )
+                    if (!await ref.read(apiProvider).login(login, password)) {
+                      return;
+                    }
+
+                    final mounted = isMounted();
+                    if (!mounted) return;
+                    context.go('/home');
+                  },
+                  child: const Text('Войти'),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(child: Container()),
       ],
     );
   }
