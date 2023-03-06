@@ -33,6 +33,9 @@ class App extends ConsumerWidget {
         case InitialStates.noLoginPassword:
           context.go('/login_page');
           break;
+        case InitialStates.wrongLoginPassword:
+          context.go('/login_page');
+          break;
         case InitialStates.noInternet:
           context.go('/no_internet');
           break;

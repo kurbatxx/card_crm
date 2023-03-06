@@ -36,15 +36,42 @@ class Api {
     );
     resp.body.log();
 
-    if (resp.body != 'login') {
-      return false;
+    if (resp.body == 'login') {
+      _writeLoginPassword(login, password);
+      return true;
     }
-    return true;
+
+    if (resp.body == 'уже авторизован') {
+      return true;
+    }
+
+    return false;
+  }
+
+  Future<void> logout() async {
+    final secureStorage = ref.read(secureStorageProvider);
+    final login = await secureStorage.read(key: "login") ?? "";
+    if (login.isEmpty) {
+      return;
+    }
+
+    final server = ref.read(serverProvider);
+    final resp = await http.post(
+      Uri.http('${server.address}:${server.port}', '/logout', {'login': login}),
+      //headers: {"Content-Type": "application/json"},
+      //body: json.encode(AccessData(login, password).toJson()),
+    );
   }
 
   Future<void> _writeAdressPortToSecure(address, port) async {
     final secureStorage = ref.read(secureStorageProvider);
     await secureStorage.write(key: "address", value: address);
     await secureStorage.write(key: "port", value: port);
+  }
+
+  Future<void> _writeLoginPassword(login, password) async {
+    final secureStorage = ref.read(secureStorageProvider);
+    await secureStorage.write(key: "login", value: login);
+    await secureStorage.write(key: "password", value: password);
   }
 }

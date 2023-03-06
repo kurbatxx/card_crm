@@ -44,14 +44,6 @@ final initialProvider = FutureProvider<InitialStates>((ref) async {
     return InitialStates.noServerConnection;
   }
 
-  // try {
-  //   await http.get(Uri.http('$address:$port'));
-  // } catch (e) {
-  //   'ERROR: $e'.log();
-
-  //   return
-  // }
-
   final login = await secureStorage.read(key: "login") ?? "";
   final password = await secureStorage.read(key: "password") ?? "";
 
@@ -59,7 +51,7 @@ final initialProvider = FutureProvider<InitialStates>((ref) async {
     return InitialStates.noLoginPassword;
   }
 
-  if (await ref.read(apiProvider).login(login, password)) {
+  if (!await ref.read(apiProvider).login(login, password)) {
     return InitialStates.wrongLoginPassword;
   }
 

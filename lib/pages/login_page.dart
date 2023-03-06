@@ -29,6 +29,8 @@ class LoginPassWithButton extends HookConsumerWidget {
     final passwordController = useTextEditingController();
     final isMounted = useIsMounted();
 
+    final isLoading = useState(false);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -51,19 +53,33 @@ class LoginPassWithButton extends HookConsumerWidget {
             children: [
               Expanded(
                 child: FilledButton(
-                  onPressed: () async {
-                    final login = loginController.text;
-                    final password = passwordController.text;
+                  onPressed: isLoading.value
+                      ? null
+                      : () async {
+                          final login = loginController.text;
+                          final password = passwordController.text;
 
-                    if (!await ref.read(apiProvider).login(login, password)) {
-                      return;
-                    }
+                          isLoading.value = true;
 
-                    final mounted = isMounted();
-                    if (!mounted) return;
-                    context.go('/home');
-                  },
-                  child: const Text('Войти'),
+                          if (!await ref
+                              .read(apiProvider)
+                              .login(login, password)) {
+                            isLoading.value = false;
+                            return;
+                          }
+
+                          final mounted = isMounted();
+                          if (!mounted) return;
+                          context.go('/home');
+                        },
+                  child: isLoading.value
+                      ? const SizedBox.square(
+                          dimension: 16,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text('Войти'),
                 ),
               ),
             ],
