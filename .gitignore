@@ -45,3 +45,4 @@ app.*.map.json
 
 [Gg]enerated**
 *.g.dart
+*.freezed.dart

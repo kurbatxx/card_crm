@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:card_crm/ext/ext_log.dart';
+import 'package:card_crm/model/organization.dart';
 import 'package:card_crm/providers/initial_provider.dart';
 import 'package:card_crm/providers/secure_storage_provider.dart';
 import 'package:card_crm/providers/server_connection.dart';
@@ -34,10 +35,11 @@ class Api {
       headers: {"Content-Type": "application/json"},
       body: json.encode(AccessData(login, password).toJson()),
     );
+
     resp.body.log();
 
     if (resp.body == 'login') {
-      _writeLoginPassword(login, password);
+      await _writeLoginPassword(login, password);
       return true;
     }
 
@@ -48,19 +50,46 @@ class Api {
     return false;
   }
 
-  Future<void> logout() async {
+  Future<bool> logout() async {
     final secureStorage = ref.read(secureStorageProvider);
     final login = await secureStorage.read(key: "login") ?? "";
+
     if (login.isEmpty) {
-      return;
+      login.log();
+      throw 'No login';
     }
 
     final server = ref.read(serverProvider);
     final resp = await http.post(
       Uri.http('${server.address}:${server.port}', '/logout', {'login': login}),
-      //headers: {"Content-Type": "application/json"},
-      //body: json.encode(AccessData(login, password).toJson()),
     );
+    if (resp.body == "logout") {
+      await _writeLoginPassword("", "");
+      return true;
+    }
+
+    return false;
+  }
+
+  Future<List<Organization>> getOrganization() async {
+    final secureStorage = ref.read(secureStorageProvider);
+    final login = await secureStorage.read(key: "login") ?? "";
+    if (login.isEmpty) {
+      throw 'No login';
+    }
+
+    final server = ref.read(serverProvider);
+    final resp = await http.get(
+      Uri.http('${server.address}:${server.port}', '/organizations',
+          {'login': login}),
+    );
+    resp.body.log();
+
+    List<dynamic> jsonList = json.decode(resp.body) as List;
+    List<Organization> organization =
+        jsonList.map((e) => Organization.fromJson(e)).toList();
+
+    return organization;
   }
 
   Future<void> _writeAdressPortToSecure(address, port) async {

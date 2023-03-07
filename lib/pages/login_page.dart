@@ -56,10 +56,10 @@ class LoginPassWithButton extends HookConsumerWidget {
                   onPressed: isLoading.value
                       ? null
                       : () async {
+                          isLoading.value = true;
+
                           final login = loginController.text;
                           final password = passwordController.text;
-
-                          isLoading.value = true;
 
                           if (!await ref
                               .read(apiProvider)
