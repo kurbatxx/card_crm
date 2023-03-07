@@ -14,9 +14,19 @@ class HomePage extends HookConsumerWidget {
     final orgIsLoading = useState(false);
 
     final isMounted = useIsMounted();
+    final tabController = useTabController(initialLength: 2);
+    final switchValue = useState(false);
 
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 0,
+        title: TabBar(
+          controller: tabController,
+          tabs: const [
+            Tab(child: Text('Поиск', style: TextStyle(fontSize: 16.0))),
+            Tab(child: Text('Заявки', style: TextStyle(fontSize: 16.0))),
+          ],
+        ),
         actions: [
           IconButton(
             onPressed: orgIsLoading.value
@@ -49,6 +59,34 @@ class HomePage extends HookConsumerWidget {
             },
             icon: const Icon(Icons.logout),
           ),
+        ],
+      ),
+      body: TabBarView(
+        controller: tabController,
+        children: [
+          Column(
+            children: [
+              const TextField(),
+              SwitchListTile(
+                title: const Text('Показывать выбывших'),
+                value: switchValue.value,
+                onChanged: (bool _) {
+                  switchValue.value = !switchValue.value;
+                },
+              ),
+              const DropdownMenu<dynamic>(
+                leadingIcon: Icon(Icons.search),
+                label: Text('Выбрать школу'),
+                dropdownMenuEntries: [],
+                // onSelected: (icon) {
+                //   setState(() {
+                //     selectedIcon = icon;
+                //   });
+                // },
+              )
+            ],
+          ),
+          Column(),
         ],
       ),
     );
