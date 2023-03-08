@@ -1,6 +1,8 @@
 import 'package:card_crm/api/api.dart';
 import 'package:card_crm/ext/ext_log.dart';
+import 'package:card_crm/pages/org_selector_page.dart';
 import 'package:card_crm/providers/initial_provider.dart';
+import 'package:card_crm/providers/org_select_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +18,8 @@ class HomePage extends HookConsumerWidget {
     final isMounted = useIsMounted();
     final tabController = useTabController(initialLength: 2);
     final switchValue = useState(false);
+
+    final selectOrg = ref.watch(orgSelectProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -66,7 +70,14 @@ class HomePage extends HookConsumerWidget {
         children: [
           Column(
             children: [
-              const TextField(),
+              TextField(
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.clear),
+                  ),
+                ),
+              ),
               SwitchListTile(
                 title: const Text('Показывать выбывших'),
                 value: switchValue.value,
@@ -74,15 +85,17 @@ class HomePage extends HookConsumerWidget {
                   switchValue.value = !switchValue.value;
                 },
               ),
-              const DropdownMenu<dynamic>(
-                leadingIcon: Icon(Icons.search),
-                label: Text('Выбрать школу'),
-                dropdownMenuEntries: [],
-                // onSelected: (icon) {
-                //   setState(() {
-                //     selectedIcon = icon;
-                //   });
-                // },
+              ListTile(
+                onTap: () {
+                  showOverlay(context: context);
+                },
+                title: Text(selectOrg.fullName),
+                trailing: IconButton(
+                  onPressed: () {
+                    ref.invalidate(orgSelectProvider);
+                  },
+                  icon: const Icon(Icons.clear),
+                ),
               )
             ],
           ),
@@ -91,4 +104,38 @@ class HomePage extends HookConsumerWidget {
       ),
     );
   }
+}
+
+void showOverlay({
+  required BuildContext context,
+}) {
+  OverlayEntry? overlay;
+
+  final state = Overlay.of(context);
+  overlay = OverlayEntry(
+    builder: (context) {
+      return GestureDetector(
+        onTap: () {
+          'close overlay'.log();
+          overlay?.remove();
+        },
+        child: Material(
+          color: Colors.black.withAlpha(150),
+          child: Padding(
+            padding: const EdgeInsets.all(60.0),
+            child: GestureDetector(
+              onTap: () {},
+              child: Scaffold(
+                body: OrgSelectorPage(
+                  overlay: overlay,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+
+  state.insert(overlay);
 }
