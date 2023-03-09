@@ -123,10 +123,11 @@ void showOverlay({
           color: Colors.black.withAlpha(150),
           child: Padding(
             padding: const EdgeInsets.all(60.0),
-            child: GestureDetector(
-              onTap: () {},
-              child: Scaffold(
-                body: OrgSelectorPage(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.0),
+              child: GestureDetector(
+                onTap: () {},
+                child: OrgSelectorPage(
                   overlay: overlay,
                 ),
               ),
