@@ -21,6 +21,8 @@ class HomePage extends HookConsumerWidget {
 
     final selectOrg = ref.watch(orgSelectProvider);
 
+    final searchController = useTextEditingController();
+
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -71,6 +73,10 @@ class HomePage extends HookConsumerWidget {
           Column(
             children: [
               TextField(
+                controller: searchController,
+                onSubmitted: (_) {
+                  searchController.text.log();
+                },
                 decoration: InputDecoration(
                   suffixIcon: IconButton(
                     onPressed: () {},
@@ -99,7 +105,9 @@ class HomePage extends HookConsumerWidget {
               )
             ],
           ),
-          Column(),
+          Expanded(
+            child: ListView(),
+          ),
         ],
       ),
     );

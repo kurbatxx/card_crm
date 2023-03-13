@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:card_crm/ext/ext_log.dart';
-import 'package:card_crm/model/organization.dart';
+import 'package:card_crm/model/organization/organization.dart';
 import 'package:card_crm/providers/initial_provider.dart';
 import 'package:card_crm/providers/secure_storage_provider.dart';
 import 'package:card_crm/providers/server_connection.dart';
@@ -90,6 +90,26 @@ class Api {
         jsonList.map((e) => Organization.fromJson(e)).toList();
 
     return organization;
+  }
+
+  Future<List<Organization>> initSearch() async {
+    final secureStorage = ref.read(secureStorageProvider);
+    final login = await secureStorage.read(key: "login") ?? "";
+    if (login.isEmpty) {
+      throw 'No login';
+    }
+
+    final server = ref.read(serverProvider);
+    final resp = await http.get(
+      Uri.http('${server.address}:${server.port}', '/search', {'login': login}),
+    );
+    resp.body.log();
+
+    List<dynamic> jsonList = json.decode(resp.body) as List;
+    // List<Organization> organization =
+    //     jsonList.map((e) => Organization.fromJson(e)).toList();
+
+    //return organization;
   }
 
   Future<void> _writeAdressPortToSecure(address, port) async {
