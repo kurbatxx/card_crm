@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:card_crm/ext/ext_log.dart';
+import 'package:card_crm/model/init_search/init_search.dart';
+import 'package:card_crm/model/org_client/org_client.dart';
 import 'package:card_crm/model/organization/organization.dart';
 import 'package:card_crm/providers/initial_provider.dart';
 import 'package:card_crm/providers/secure_storage_provider.dart';
@@ -92,24 +94,36 @@ class Api {
     return organization;
   }
 
-  Future<List<Organization>> initSearch() async {
+  Future<List<OrgClient>> initSearch(
+    InitSearch search,
+  ) async {
     final secureStorage = ref.read(secureStorageProvider);
     final login = await secureStorage.read(key: "login") ?? "";
     if (login.isEmpty) {
       throw 'No login';
     }
 
+    if (search.search == '') {
+      return [];
+    }
+
     final server = ref.read(serverProvider);
-    final resp = await http.get(
-      Uri.http('${server.address}:${server.port}', '/search', {'login': login}),
+
+    final resp = await http.post(
+      Uri.http(
+        '${server.address}:${server.port}',
+        '/search',
+        {'login': login},
+      ),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(search),
     );
-    resp.body.log();
 
     List<dynamic> jsonList = json.decode(resp.body) as List;
-    // List<Organization> organization =
-    //     jsonList.map((e) => Organization.fromJson(e)).toList();
+    List<OrgClient> orgClients =
+        jsonList.map((e) => OrgClient.fromJson(e)).toList();
 
-    //return organization;
+    return orgClients;
   }
 
   Future<void> _writeAdressPortToSecure(address, port) async {
