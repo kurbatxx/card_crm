@@ -1,6 +1,6 @@
 import 'package:card_crm/api/api.dart';
 import 'package:card_crm/ext/ext_log.dart';
-import 'package:card_crm/pages/home/search_tab_page.dart';
+import 'package:card_crm/pages/home/search_tab/search_tab_page.dart';
 import 'package:card_crm/providers/initial_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';

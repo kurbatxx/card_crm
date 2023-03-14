@@ -1,8 +1,9 @@
 import 'package:card_crm/ext/ext_log.dart';
 import 'package:card_crm/model/init_search/init_search.dart';
+import 'package:card_crm/pages/home/search_tab/search_list_view.dart';
 import 'package:card_crm/pages/org_selector_page.dart';
 import 'package:card_crm/providers/init_search_provider.dart';
-import 'package:card_crm/providers/org_clients_list_provider.dart';
+import 'package:card_crm/providers/init_search_org_clients_list_provider.dart';
 import 'package:card_crm/providers/org_select_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -28,15 +29,14 @@ class SearchTabPageWidget extends HookConsumerWidget {
             searchController.text.log();
             init.value = true;
             final org = ref.read(orgSelectProvider);
-            ref.read(initSearchProvider.notifier).update(
-                  (state) => InitSearch(
-                    search: searchController.text,
-                    schoolId: org.id,
-                    deleted: switchValue.value,
-                  ),
-                );
+            ref.read(initSearchProvider.notifier).state = InitSearch(
+              search: searchController.text,
+              schoolId: org.id,
+              deleted: switchValue.value,
+            );
           },
           decoration: InputDecoration(
+            hintText: 'ФИО или ID',
             suffixIcon: IconButton(
               onPressed: () {
                 searchController.clear();
@@ -69,25 +69,21 @@ class SearchTabPageWidget extends HookConsumerWidget {
               ? const Center(
                   child: Text('Начните поиск, чтобы получить результат'),
                 )
-              : Center(
-                  child: orgClients.when(
-                    //skipLoadingOnRefresh: false,
-                    data: (data) {
-                      data.log();
-                      return ListView.builder(
-                          itemCount: data.length,
-                          itemBuilder: (context, index) {
-                            final orgClient = data[index];
-                            return ListTile(
-                              title: Text(orgClient.name),
-                            );
-                          });
-                    },
-                    error: (_, __) => const Center(
-                      child: Text('error'),
-                    ),
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(),
+              : orgClients.when(
+                  //skipLoadingOnRefresh: false,
+                  data: (data) {
+                    data.log();
+                    return const SearchListView();
+                  },
+                  error: (_, __) => const Center(
+                    child: Text('Ошибка поиска'),
+                  ),
+                  loading: () => const Center(
+                    child: SizedBox.square(
+                      dimension: 16.0,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),

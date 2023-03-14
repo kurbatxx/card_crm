@@ -6,6 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 final initSearchOrgClientsListProvider = FutureProvider<List<OrgClient>>(
   (ref) async {
     final search = ref.watch(initSearchProvider);
-    return ref.watch(apiProvider).initSearch(search);
+    return await ref.watch(apiProvider).initSearch(search);
   },
 );
