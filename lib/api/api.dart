@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:card_crm/ext/ext_log.dart';
 import 'package:card_crm/model/init_search/init_search.dart';
 import 'package:card_crm/model/org_client/org_client.dart';
+import 'package:card_crm/model/org_clients_with_next_page/org_clients_with_next_page.dart';
 import 'package:card_crm/model/organization/organization.dart';
 import 'package:card_crm/providers/initial_provider.dart';
 import 'package:card_crm/providers/secure_storage_provider.dart';
@@ -119,10 +120,38 @@ class Api {
       body: json.encode(search),
     );
 
-    List<dynamic> jsonList = json.decode(resp.body) as List;
-    List<OrgClient> orgClients =
-        jsonList.map((e) => OrgClient.fromJson(e)).toList();
+    final orgLCientsWithNextpage =
+        OrgClientWithNextPage.fromJson(json.decode(resp.body));
 
+    final orgClients = orgLCientsWithNextpage.orgClients;
+    return orgClients;
+  }
+
+  Future<List<OrgClient>> searchPage(
+    int pageNumber,
+  ) async {
+    final secureStorage = ref.read(secureStorageProvider);
+    final login = await secureStorage.read(key: "login") ?? "";
+    if (login.isEmpty) {
+      throw 'No login';
+    }
+
+    final server = ref.read(serverProvider);
+
+    final resp = await http.post(
+      Uri.http(
+        '${server.address}:${server.port}',
+        '/search_page',
+        {'login': login, 'page_number': pageNumber.toString()},
+      ),
+    );
+
+    final orgLCientsWithNextPage =
+        OrgClientWithNextPage.fromJson(json.decode(resp.body));
+
+    final orgClients = orgLCientsWithNextPage.orgClients;
+
+    orgClients.log();
     return orgClients;
   }
 
