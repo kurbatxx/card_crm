@@ -6,6 +6,7 @@ import 'package:card_crm/model/org_client/org_client.dart';
 import 'package:card_crm/model/org_clients_with_next_page/org_clients_with_next_page.dart';
 import 'package:card_crm/model/organization/organization.dart';
 import 'package:card_crm/providers/initial_provider.dart';
+import 'package:card_crm/providers/next_search_page_exist_provider.dart';
 import 'package:card_crm/providers/secure_storage_provider.dart';
 import 'package:card_crm/providers/server_connection.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -120,16 +121,23 @@ class Api {
       body: json.encode(search),
     );
 
-    final orgLCientsWithNextpage =
+    final orgCientsWithNextpage =
         OrgClientWithNextPage.fromJson(json.decode(resp.body));
 
-    final orgClients = orgLCientsWithNextpage.orgClients;
+    orgCientsWithNextpage.log();
+
+    ref.read(nextSearchPageExistProvider.notifier).state =
+        orgCientsWithNextpage.nextPageExist;
+
+    final orgClients = orgCientsWithNextpage.orgClients;
     return orgClients;
   }
 
   Future<List<OrgClient>> searchPage(
     int pageNumber,
   ) async {
+    pageNumber.log();
+
     final secureStorage = ref.read(secureStorageProvider);
     final login = await secureStorage.read(key: "login") ?? "";
     if (login.isEmpty) {
@@ -146,12 +154,14 @@ class Api {
       ),
     );
 
-    final orgLCientsWithNextPage =
+    final orgCientsWithNextpage =
         OrgClientWithNextPage.fromJson(json.decode(resp.body));
 
-    final orgClients = orgLCientsWithNextPage.orgClients;
+    ref.read(nextSearchPageExistProvider.notifier).state =
+        orgCientsWithNextpage.nextPageExist;
 
-    orgClients.log();
+    final orgClients = orgCientsWithNextpage.orgClients;
+
     return orgClients;
   }
 
