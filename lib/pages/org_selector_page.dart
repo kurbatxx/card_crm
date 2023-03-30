@@ -1,4 +1,3 @@
-import 'package:card_crm/ext/ext_log.dart';
 import 'package:card_crm/model/organization/organization.dart';
 import 'package:card_crm/providers/org_list_provider.dart';
 import 'package:card_crm/providers/org_select_provider.dart';

@@ -1,3 +1,4 @@
+import 'package:card_crm/model/client_fullname/client_fullname.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'org_client.freezed.dart';
@@ -8,7 +9,7 @@ class OrgClient with _$OrgClient {
   //@JsonSerializable(explicitToJson: true)
   const factory OrgClient({
     required String id,
-    required String name,
+    required ClientFullname fullname,
     required String group,
     required String org,
     required String balance,

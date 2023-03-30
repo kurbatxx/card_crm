@@ -1,5 +1,5 @@
 import 'package:card_crm/api/api.dart';
-import 'package:card_crm/ext/ext_log.dart';
+
 import 'package:card_crm/model/org_client/org_client.dart';
 import 'package:card_crm/providers/next_search_page_exist_provider.dart';
 import 'package:card_crm/providers/org_clients_list.dart';
@@ -66,7 +66,8 @@ class SearchListView extends HookConsumerWidget {
 
         final orgClient = data[index];
         return ListTile(
-          title: Text(orgClient.name),
+          title:
+              Text('${orgClient.fullname.lastName} ${orgClient.fullname.name}'),
         );
       },
     );
