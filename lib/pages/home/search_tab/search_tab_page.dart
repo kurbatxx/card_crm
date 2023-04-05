@@ -32,7 +32,7 @@ class SearchTabPageWidget extends HookConsumerWidget {
             ref.read(initSearchProvider.notifier).state = InitSearch(
               search: searchController.text,
               schoolId: org.id,
-              deleted: switchValue.value,
+              showDeleted: switchValue.value,
             );
           },
           decoration: InputDecoration(

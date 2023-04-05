@@ -8,8 +8,8 @@ class InitSearch with _$InitSearch {
   //@JsonSerializable(explicitToJson: true)
   const factory InitSearch({
     required String search,
-    @JsonKey(name: 'school_id') required int schoolId,
-    @JsonKey(name: 'deleted') required bool deleted,
+    @JsonKey(name: 'org_id') required int schoolId,
+    @JsonKey(name: 'show_deleted') required bool showDeleted,
   }) = _InitSearch;
 
   factory InitSearch.fromJson(Map<String, dynamic> json) =>

@@ -5,6 +5,6 @@ final initSearchProvider = StateProvider(
   (ref) => const InitSearch(
     search: '',
     schoolId: 0,
-    deleted: false,
+    showDeleted: false,
   ),
 );
