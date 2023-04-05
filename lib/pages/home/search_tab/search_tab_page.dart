@@ -57,12 +57,14 @@ class SearchTabPageWidget extends HookConsumerWidget {
             showOverlay(context: context);
           },
           title: Text(selectOrg.fullName),
-          trailing: IconButton(
-            onPressed: () {
-              ref.invalidate(orgSelectProvider);
-            },
-            icon: const Icon(Icons.clear),
-          ),
+          trailing: selectOrg.id == 0
+              ? const Icon(Icons.chevron_right)
+              : IconButton(
+                  onPressed: () {
+                    ref.invalidate(orgSelectProvider);
+                  },
+                  icon: const Icon(Icons.clear),
+                ),
         ),
         Expanded(
           child: !init.value
